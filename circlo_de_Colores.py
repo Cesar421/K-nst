@@ -147,16 +147,18 @@ def build_wheel(lit):
             dist = math.hypot(dx, dy)
             if dist <= WHEEL_R:
                 angle = (math.degrees(math.atan2(dy, dx)) + 90) % 360
-                saturation = min(100, (dist / WHEEL_R) * 100)
+                saturation = min(100.0, (dist / WHEEL_R) * 100)
                 rgb = hsl_to_rgb(angle, saturation, lit)
-                
-                # CORRECCIÓN: Cálculo de alpha seguro entre 0 y 255
-                alpha = 255
                 if dist > WHEEL_R - 1:
-                    alpha = max(0, min(255, int((WHEEL_R - dist) * 255)))
-                
-                surf.set_at((x, y), (*rgb, alpha))
+                    alpha = max(0, min(255, int((WHEEL_R - dist + 1) * 255)))
+                else:
+                    alpha = 255
+                r = max(0, min(255, int(rgb[0])))
+                g = max(0, min(255, int(rgb[1])))
+                b = max(0, min(255, int(rgb[2])))
+                surf.set_at((x, y), (r, g, b, alpha))
     WHEEL_SURF = surf
+
 # ── Slider ─────────────────────────────────────────────────────────────────────
 class Slider:
     def __init__(self, x, y, w, label, lo, hi, val, fmt="{:.0f}"):
